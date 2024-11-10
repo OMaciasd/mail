@@ -1,10 +1,10 @@
-# 📋 CRUD Project with Frontend
+# 📬 Mail Server Project with Ubuntu and Roundcube
 
-This project implements a basic CRUD form for managing items. The Frontend is built using HTML, CSS, and JavaScript. The components are containerized in Docker and orchestrated with Docker Compose to facilitate deployment with NGINX as a Proxy Server.
+This project sets up a mail server with a webmail interface using Roundcube, along with additional tooling for automation, provisioning, and deployment. It leverages Docker, Vagrant, and Python for a smooth deployment experience on Ubuntu.
 
 ## 🗂️ Table of Contents
 
-- [📋 CRUD Project with Frontend](#-crud-project-with-frontend)
+- [📬 Mail Server Project with Ubuntu and Roundcube](#-mail-server-project-with-ubuntu-and-roundcube)
   - [🗂️ Table of Contents](#️-table-of-contents)
   - [📖 Project Description](#-project-description)
     - [🛑 Considerations](#-considerations)
@@ -12,7 +12,8 @@ This project implements a basic CRUD form for managing items. The Frontend is bu
   - [✅ Requirements](#-requirements)
   - [🔧 Installation and Setup](#-installation-and-setup)
   - [🚀 Running the Project](#-running-the-project)
-  - [⚙️ CI/CD and Deployment on Render](#️-cicd-and-deployment-on-render)
+  - [📧 Accessing Roundcube Webmail](#-accessing-roundcube-webmail)
+  - [⚙️ CI/CD and Deployment](#️-cicd-and-deployment)
     - [CI Pipeline](#ci-pipeline)
     - [🌐 Deployment on Render](#-deployment-on-render)
   - [🛠️ Technologies Used](#️-technologies-used)
@@ -22,18 +23,11 @@ This project implements a basic CRUD form for managing items. The Frontend is bu
 
 ## 📖 Project Description
 
-This project allows the management of items via a basic CRUD form, where you can:
-
-- Add a new item.
-- View a list of items.
-- Edit an existing item.
-- Delete an item.
-
-The data can be stored in either a JSON file or a database.
+This project configures a basic mail server on an Ubuntu environment using Postfix, Dovecot, and Roundcube as the webmail client. It also incorporates Docker and Vagrant for deployment automation and Python for scripting additional setup steps.
 
 ### 🛑 Considerations
 
-- **Security**: For this test, advanced security mechanisms such as authentication or thorough data validation have not been included.
+- **Security**: Basic security measures are in place, but additional configurations are recommended for production, such as SSL for email encryption and advanced user authentication.
 
 ### 📂 Project Structure
 
@@ -42,92 +36,90 @@ The data can be stored in either a JSON file or a database.
 ├── .github
 │   ├── dependabot.yml
 │   └── workflows
-│       ├── cd-pipeline.yml
-│       └── ci-pipeline.yml
-├── src/
-│   ├── templates
-│   │   └── index.html
-│   └── static
-│       ├── styles.css
-│       └── script.js
+│       ├── ci-pipeline.yml
+│       └── cd-pipeline.yml
+├── config/
+│   ├── postfix/
+│   ├── dovecot/
+│   └── roundcube/
+├── scripts/
+│   ├── setup_mail.sh
+│   └── setup_roundcube.py
 ├── docker-compose.yml
+├── Vagrantfile
 └── README.md
 
 ```
 
+# 📬 Mail Server Project with Ubuntu and Roundcube
+
+Este proyecto configura un servidor de correo con interfaz web mediante Roundcube, usando Docker, Vagrant y Python en un entorno Ubuntu.
+
 ## ✅ Requirements
 
-- [node](https://nodejs.org/en).
-- 🐳 [Docker](https://www.docker.com/get-started).
-- [Docker Compose](https://docs.docker.com/compose/).
-- Git.
-- [GitHub Actions](https://docs.github.com/en/actions).
+- 🐍 **[Python](https://www.python.org/downloads/)** (versión 3.6 o superior): Para scripting y configuración.
+- 🐳 **[Docker](https://www.docker.com/get-started)**: Para la contenedorización de aplicaciones.
+- 🛠️ **[Docker Compose](https://docs.docker.com/compose/install/)**: Para administrar aplicaciones multi-contenedor.
+- 📦 **[Vagrant](https://www.vagrantup.com/downloads)**: Para la provisión de máquinas virtuales.
+- 🌐 **[Git](https://git-scm.com/downloads)**: Para control de versiones.
+- 🐧 **[Ubuntu Server](https://ubuntu.com/download/server)** (por ejemplo, Ubuntu 20.04 o posterior): Sistema operativo del servidor.
+- 🚀 **[GitHub Actions](https://github.com/features/actions)**: Para CI/CD workflows.
+- 🌐 **[Render](https://render.com/)**: Para despliegue y gestión de la aplicación.
+
+---
 
 ## 🔧 Installation and Setup
 
-1. Clone the frontend and backend repositories from GitHub:
+1. **Clone the Repository**:
 
-    ```bash
-    git clone https://github.com/omaciasd/form-javascript.git
+   ```bash
+   git clone https://github.com/your-username/mail-server-project.git
+   cd mail-server-project/
 
-    ```
-
-2. Navigate to each project folder:
-
-    ```bash
-    cd form-javascript/
-
-    ```
+  ```
 
 ## 🚀 Running the Project
 
-To start the complete application using Docker Compose:
+This launches the full stack, including Roundcube, configured as a webmail client for the mail server.
 
-1. Navigate to the folder where the `docker-compose.yml` file is located and run:
+## 📧 Accessing Roundcube Webmail
 
-    ```bash
-    docker-compose up --build
+Once the setup completes, you can access the Roundcube webmail interface by navigating to [http://localhost](http://localhost) in your browser.
 
-    ```
+## ⚙️ CI/CD and Deployment
 
-2. ## 🌐 Accessing the Application
-
-- The **frontend** will be available by NGINX as inverse proxy [http://localhost:80](http://localhost:80).
-
-## ⚙️ CI/CD and Deployment on Render
-
-This project uses **GitHub Actions** for Continuous Integration (CI) and **Render** for Continuous Deployment (CD).
+The project uses **GitHub Actions** for continuous integration (CI) and **Render** for continuous deployment (CD).
 
 ### CI Pipeline
 
-Every time a *push* is made to the `main` branch, the following pipeline is triggered:
+Each push to the `main` branch triggers the following CI pipeline steps:
 
-1. **Unit testing**: Automated tests are run to ensure code integrity.
-2. **Docker image build**: Docker images for both frontend and backend are built.
-3. **Render deployment**: If all steps pass successfully, the application is deployed to **Render**.
+1. **Unit Testing**: Executes tests to ensure code integrity.
+2. **Build**: Builds Docker images for the mail server and Roundcube.
+3. **Deployment**: Deploys to **Render** if all steps pass successfully.
 
 ### 🌐 Deployment on Render
 
-The project is configured to be deployed on **Render**, which provides a managed server infrastructure for both applications (frontend and backend).
+The project is configured to deploy on **Render**, which provides a managed server environment for easy deployment and scaling.
 
-- **Frontend** is deployed as a web service accessible at [https://form-javascript.render.com](https://form-javascript-onyv.onrender.com).
+- **Webmail Interface**: The Roundcube webmail client can be accessed at [https://mail-project.render.com](https://mail-project.render.com) after deployment.
 
 ## 🛠️ Technologies Used
 
-- **Frontend**: HTML, CSS, JavaScript.
-- **DevOps**: Docker, Docker Compose.
+- **Email Server**: Postfix, Dovecot.
+- **Webmail Client**: Roundcube.
+- **Automation and Provisioning**: Vagrant, Docker, Docker Compose.
 - **CI/CD**: GitHub Actions, Render.
-- **🚧 TDD**: Postman, CURL.
+- **Scripting**: Bash, Python.
+- **Development**: Git, Ubuntu Server.
 
 ## 🏗️ Architecture
 
-For detailed information on the system's architecture, including design decisions and component interactions, refer to the [Architecture Guide](./docs/guides/ARCHITECTURE.md).
+For detailed information on the system's architecture, refer to the [Architecture Guide](./docs/guides/ARCHITECTURE.md).
 
 ## 🤝 Contributing
 
 To contribute to this project, please check out our [Contribution Guide](./docs/guides/CONTRIBUTING.md) for instructions on setting up your development environment and the process for submitting contributions.
-
-Describe how to contribute to the project’s documentation
 
 ## 📜 License
 
