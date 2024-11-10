@@ -1,158 +1,271 @@
-# **Contribution Guide**
+# **Mail Server Setup and Contribution Guide for Ubuntu** ✉️
 
-## **Contents**
+## **Contents** 📚
 
-- [**Contribution Guide**](#contribution-guide)
-  - [**Contents**](#contents)
-  - [🧩 **Project Structure**](#-project-structure)
-  - [🔒 Managing Sensitive Files](#-managing-sensitive-files)
-    - [`.env` Files](#env-files)
-    - [JSON Files](#json-files)
-  - [**Setting Up the Development Environment**](#setting-up-the-development-environment)
-    - [**Setting Environment Variables**](#setting-environment-variables)
-  - [**Workflow**](#workflow)
-    - [**Creating Branches**](#creating-branches)
-  - [🔍 **Testing and Verification**](#-testing-and-verification)
-    - [**Code Standards**](#code-standards)
-    - [✅ **Test Coverage**](#-test-coverage)
-    - [✅ **Load Testing**](#-load-testing)
-  - [**Commit Messages**](#commit-messages)
-  - [**Submitting Pull Requests**](#submitting-pull-requests)
-  - [Code Review](#code-review)
-  - [📂 Verifying the Pipeline in the Repository](#-verifying-the-pipeline-in-the-repository)
-  - [**Documentation Contributions**](#documentation-contributions)
+- [Mail Server Setup on Ubuntu](#mail-server-setup-on-ubuntu)
+  - 🔄 **Restart Postfix**
+  - 📥 **Setting Up Dovecot**
+    - [**Install Dovecot**](#install-dovecot)     
+    - [⚙️Configure Dovecot](#configure-dovecot-)
+    - [🔄 Restart Dovecot](#restart-dovecot-)
+  - [🔐 Configuring SSL/TLS with Certbot](#configuring-ssltls-with-certbot)
+    - [🔧 Install Certbot](#install-certbot-)
+    - [🔑 Obtain SSL Certificates](#obtain-ssl-certificates-)
+    - [🔒 Configure Postfix and Dovecot to Use SSL/TLS](#configure-postfix-and-dovecot-to-use-ssltls-)
+    - [🔄 Restart Both Services](#restart-both-services-)
+  - [🛠️ Workflow](#workflow)
+    - [👤 Creating Mailboxes and Users](#creating-mailboxes-and-users-)
+  - [🔍 Testing and Verification](#testing-and-verification)
+    - [📧 Testing Mail Sending/Receiving](#testing-mail-sendingreceiving-)
+    - [📂 Log File Analysis](#log-file-analysis-)
+  - [✏️ Commit Messages](#commit-messages)
+  - [🚀 Submitting Pull Requests](#submitting-pull-requests)
+  - [🧐 Code Review](#code-review)
+  - [📂 Verifying the Mail Server Pipeline](#verifying-the-mail-server-pipeline)
+    - [CI/CD Pipeline](#cicd-pipeline)
+    - [View Logs](#view-logs)
+  - [📝 Documentation Contributions](#documentation-contributions)
 
 ## 🧩 **Project Structure**
 
-**app/**: Contains the main application code.
-**config/**: Configuration files for different environments.
-**docker/**: Docker-related files.
-**tests/**: Test cases for the application.
+- **config/**: Contains configuration files for Postfix, Dovecot, SSL certificates, and other mail-related setups.  
+- **scripts/**: Scripts for automating mail server tasks such as creating users, setting up SSL certificates, or testing mail functionality.  
+- **tests/**: Test cases and logs for verifying mail server operations, including sending/receiving emails.
 
-## 🔒 Managing Sensitive Files
+## 🔒 **Managing Sensitive Files**
 
 ### `.env` Files
 
-- **Description**: The **`.env`** file contains essential environment variables for project configuration, such as credentials and API keys.
+- **Description**: The **`.env`** file contains sensitive information such as email server credentials, API keys for mail-related services, and SSL configuration settings.
+- **Setup**: Create a **`.env`** file in the root of the project based on the **`.env-example.txt`** template. This file should contain sensitive email server credentials, like SMTP and IMAP details.
+- **Important**: The **`.env`** file is added to **`.gitignore`** to prevent sensitive information from being committed to version control.
 
-- **Setup**: Create a **`.env`** file in the root of the project using the **`.env-example.txt`** file as a reference. Fill it with your own variables.
+### Configuration Files
 
-- **Important**: The **`.env`** file is listed in **`.gitignore`** to prevent it from being uploaded to the repository.
+- **Description**: The configuration files define the settings for the mail server, including SMTP (Postfix) and IMAP/POP3 (Dovecot) settings, as well as SSL/TLS configurations.
+- **Example Files**: Use **`config-example.txt`** as a template to set up your mail configurations.
 
-### JSON Files
+## ⚙️ **Setting Up the Mail Server Environment**
 
-- **Description**: The **`data.json`** file may contain environment-specific or sensitive data.
+### 📤 **Installing Postfix**
 
-- **Example File**: Use the **`json-example.txt`** file as a reference to understand the structure of the JSON file. Do not include sensitive data in the repository.
+1. **Install Postfix**: Postfix will be used to send emails through SMTP.
 
-## **Setting Up the Development Environment**
+   ```bash
+   sudo apt update
+   sudo apt install postfix
 
-### **Setting Environment Variables**
+   ```
 
-- If necessary, explain how to configure environment variables to make the project work correctly.
+## ⚙️ **Setting Up the Mail Server Environment**
 
-## **Workflow**
+### 📤 **Configure Postfix**
 
-### **Creating Branches**
+1. **Install Postfix**:  
+   Postfix is used for sending emails through SMTP.
 
-- The solution is organized using the **GitFlow** workflow, which facilitates structured development and integration.
+   ```bash
+   sudo apt update
+   sudo apt install postfix
 
-- We welcome contributions! Please follow these steps:
+   ```
 
-1. Fork the repository.
+## 📤 **Postfix Configuration**
 
-   ![fetch](../assets/images/git/git-fetch.png)
+### ⚙️ **Edit `/etc/postfix/main.cf` to configure basic SMTP settings**
 
-2. Create a new branch (`git flow feature start new-feature`).
-
-   ![gitflow](../assets/images/git/git.png)
-
-3. Commit your changes (`git commit -am 'Add new feature'`).
-
-   ![flow](../assets/images/git/git-flow.png)
-
-4. Push to the branch (`git push origin develop`).
-
-   ![push](../assets/images/git/git-push.png)
-
-5. Open a Pull Request.
-
-## 🔍 **Testing and Verification**
-
-### **Code Standards**
-
-- Follow the PEP 8 style guide for Python code.
-
-### ✅ **Test Coverage**
-
-``` powershell
-$env:PYTHONPATH="C:\Users\$USER\challenge_sre\src\"
-pytest --cov=src src/tests/development --cov-report=html:src/tests/development/coverage.html
+```bash
+sudo nano /etc/postfix/main.cf
 
 ```
 
-![pytest](../assets/images/app/pytest.png)
+## **Example Configuration**
 
-- **`--cov=src specifies`** the folder where the source code is located.
+### Postfix Configuration Example:
 
-- **`--cov-report=html`** generates an HTML report, which is saved in the htmlcov folder.
+```bash
+myhostname = mail.example.com
+mydomain = example.com
+myorigin = $mydomain
+inet_interfaces = all
+inet_protocols = ipv4
 
-![coverage](../assets/images/app/coverage.png)
-
-### ✅ **Load Testing**
-
-- **Tools Used**
-
-  - **Locust**: An easy-to-use tool for distributed load testing.
-
-  - **Apache JMeter**: A performance testing tool that can simulate multiple users.
-
-``` python
-locust -f locustfile.py
 ```
 
-- **Access Locust Web Interface**: Once Locust is running, open your browser and go to [web server](http://localhost:8089) to start the load test and monitor performance in real-time.
 
-- **Load Test Results**
+## 🔄 **Restart Postfix**
 
-  - Response Time: [Details on response times under load]
+To apply the changes, restart the Postfix service:
 
-  - Resource Usage: [Details on CPU and memory usage]
+```bash
+sudo systemctl restart postfix
 
-  - Errors: [Details on any errors encountered during testing]
+```
 
-## **Commit Messages**
+## 📥 **Setting Up Dovecot**
 
-- Follow these conventions for commit messages:
+### 📩 **Install Dovecot**
 
-  - Use the imperative mood: "Fix bug" instead of "Fixed bug".
+Dovecot will handle the IMAP/POP3 protocols for retrieving mail.
 
-  - Include the issue number if applicable.
+```bash
+sudo apt install dovecot-core dovecot-imapd
 
-## **Submitting Pull Requests**
+```
 
-- Submit a Pull Request with a description of the changes and link to any related issues.
+## **⚙️ Configure Dovecot**
 
-## Code Review
+1. **Edit `/etc/dovecot/dovecot.conf`** to configure mail retrieval settings:
 
-- Pull requests are reviewed by project maintainers. Ensure your code meets the project's standards and passes all tests.
+    ```bash
+    sudo nano /etc/dovecot/dovecot.conf
+    
+    ```
 
-## 📂 Verifying the Pipeline in the Repository
+2. **Example Configuration**:
 
-To verify the CI/CD pipeline configured in this repository:
+    ```bash
+    listen = *
+    mail_location = maildir:~/Maildir
+    service imap-login {
+        inet_listener imap {
+            port = 0
+        }
+        inet_listener imaps {
+            port = 993
+            ssl = yes
+        }
+    }
+    
+    ```
 
-1. **View Workflows:**
-   - Navigate to the **Actions** tab in GitHub to see the configured workflows. Here, you can view the executed CI/CD pipelines and their status (success or failure).
+## **🔄 Restart Dovecot**
 
-2. **Review Executions:**
-   - Within the **Actions** tab, select a specific workflow run to view details. You can review the logs of each step, from code linting to deployment.
+- **Restart Dovecot** to apply the configuration:
 
-3. **Manual Execution:**
-   - If you have the appropriate permissions, you can manually trigger a workflow from the Actions tab, allowing you to test the pipeline on any specific branch or commit.
+    ```bash
+    sudo systemctl restart dovecot
+    
+    ```
 
-4. **Configuration Files:**
-   - Check the `.github/workflows/main.yml` file in the root of the repository to understand the pipeline configuration. This file defines the steps and actions executed during the CI/CD process.
+## **🔐 Configuring SSL/TLS with Certbot**
 
-## **Documentation Contributions**
+### **🔧 Install Certbot**
 
-- For contributing to documentation, follow the same branch and PR process as code contributions.
+- **Certbot** is used to enable SSL encryption for secure email communication:
+
+    ```bash
+    sudo apt install certbot
+    
+    ```
+
+### **🔑 Obtain SSL Certificates**
+
+- Use Certbot to obtain SSL certificates for your mail domain:
+
+    ```bash
+    sudo certbot certonly --standalone -d mail.example.com
+    
+    ```
+
+### **🔒 Configure Postfix and Dovecot to Use SSL/TLS**
+
+- **For Postfix**, edit `/etc/postfix/main.cf`:
+
+    ```bash
+    smtpd_tls_cert_file=/etc/letsencrypt/live/mail.example.com/fullchain.pem
+    smtpd_tls_key_file=/etc/letsencrypt/live/mail.example.com/privkey.pem
+    smtpd_use_tls=yes
+    ```
+
+- **For Dovecot**, edit `/etc/dovecot/conf.d/10-ssl.conf`:
+
+    ```bash
+    ssl = required
+    ssl_cert = </etc/letsencrypt/live/mail.example.com/fullchain.pem
+    ssl_key = </etc/letsencrypt/live/mail.example.com/privkey.pem
+    ```
+
+### **🔄 Restart Both Services**
+
+- **Restart both Postfix and Dovecot**:
+
+    ```bash
+    sudo systemctl restart postfix
+    sudo systemctl restart dovecot
+    ```
+
+---
+
+## **🛠️ Workflow**
+
+### **👤 Creating Mailboxes and Users**
+
+- Use **Postfix** and **Dovecot** together to create and manage user mailboxes. You can create system users who will have their mailboxes.
+
+    To add a user, run:
+
+    ```bash
+    sudo adduser user@example.com
+    ```
+
+    This will create the user and a corresponding mailbox.
+
+---
+
+## **🔍 Testing and Verification**
+
+### **📧 Testing Mail Sending/Receiving**
+
+- **Sending Email**: To verify that Postfix is working, use `mail` or another mail client to send an email.
+
+    Example using `mail`:
+
+    ```bash
+    echo "Test Email" | mail -s "Subject" user@example.com
+    ```
+
+- **Receiving Email**: Check that you can retrieve email via IMAP. You can use a mail client like Thunderbird or use the command line with `telnet` to connect to the IMAP server on port 993.
+
+### **📂 Log File Analysis**
+
+- **Check mail logs** in `/var/log/mail.log` to troubleshoot any issues.
+
+---
+
+## **✏️ Commit Messages**
+
+- Use clear and descriptive commit messages to document changes to the mail server setup, such as:
+
+    - `Add Postfix configuration for secure email sending`
+    - `Configure Dovecot to handle IMAP with SSL`
+
+---
+
+## **🚀 Submitting Pull Requests**
+
+- When submitting pull requests, include descriptions of the changes made and their impact on mail server setup or security.
+
+---
+
+## **🧐 Code Review**
+
+- **Pull requests** will be reviewed to ensure compliance with best practices for email server setup and security.
+
+---
+
+## **📂 Verifying the Mail Server Pipeline**
+
+### **CI/CD Pipeline**
+
+- Verify that the **CI/CD pipeline** includes tests for email functionality.
+
+### **View Logs**
+
+- Each pipeline step should provide logs for mail server setup, email sending/receiving, and SSL verification.
+
+---
+
+## **📝 Documentation Contributions**
+
+- Contributions to documentation should be submitted as part of a pull request, describing any new configuration setups, troubleshooting steps, or changes to mail server components.
