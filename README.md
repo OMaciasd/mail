@@ -76,7 +76,7 @@ Este proyecto configura un servidor de correo con interfaz web mediante Roundcub
    git clone https://github.com/your-username/mail-server-project.git
    cd mail-server-project/
 
-  ```
+   ```
 
 ## 🚀 Running the Project
 
